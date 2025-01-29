@@ -2,6 +2,10 @@
 
 This project focuses on **automated extraction of cadastral coordinates** from real estate documents, particularly auction notices, using **Large Language Models (LLMs)**. The extracted information includes **lot, municipality (full name), map sheet (foglio), parcel (particella), subunit (sub), and property type**.
 
+> **Note**: Due to a corporate **NDA**, datasets used in this research are not publicly available. Likewise, the provided prompt samples are restricted. However, dataset details are documented in the **Datasets** section.
+> 
+Documents considered are in Italian.
+
 ## Invocation
 
 - Use the `invoke.py` script.
@@ -11,7 +15,7 @@ This project focuses on **automated extraction of cadastral coordinates** from r
 Example:
 
 ```sh
-python invoke.py --llm "anthropic.claude-3-5-sonnet-20240620-v1:0" --text "This is a test document. Municipality of Milan, lot 2, map sheet 2, parcel 5, subunit 45."
+python invoke.py --llm "anthropic.claude-3-5-sonnet-20240620-v1:0" --text "Questo è un doc di prova. comune di Milano  lotto 2 foglio 2 particella 5 sub 45."
 ```
 
 ### Expected Output:
