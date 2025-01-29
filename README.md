@@ -1,6 +1,7 @@
 
 # Coordinate Catastali, Information Extraction con LLMs
 
+Questo progetto si concentra sull'estrazione automatica delle coordinate catastali da documenti del dominio immobiliare, con particolare attenzione agli avvisi d'asta utilizzando un approccio basato su LLMs.
 Estrae lotto, comune (nome esteso), foglio, particella, sub, tipo immobile
 
 
