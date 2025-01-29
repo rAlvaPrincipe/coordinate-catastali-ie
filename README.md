@@ -1,23 +1,20 @@
+# Cadastral Coordinates: Information Extraction with LLMs
 
-# Coordinate Catastali, Information Extraction con LLMs
+This project focuses on **automated extraction of cadastral coordinates** from real estate documents, particularly auction notices, using **Large Language Models (LLMs)**. The extracted information includes **lot, municipality (full name), map sheet (foglio), parcel (particella), subunit (sub), and property type**.
 
-Questo progetto si concentra sull'estrazione automatica delle coordinate catastali da documenti del dominio immobiliare, con particolare attenzione agli avvisi d'asta utilizzando un approccio basato su LLMs.
-Estrae lotto, comune (nome esteso), foglio, particella, sub, tipo immobile
+## Invocation
 
+- Use the `invoke.py` script.
+- Specify the LLM model to use.
+- Provide the text to be processed.
 
-## Invocazione
+Example:
 
-- Usa lo script invoke.py
-- Specifica il nome del modello LLM che desideri utilizzare.
-- Specificail testo che vuoi elaborare.
-
-Esempio:
-
-```
-python invoke.py --llm "anthropic.claude-3-5-sonnet-20240620-v1:0" --text "Questo è un doc di prova. comune di Milano  lotto 2 foglio 2 particella 5 sub 45."
+```sh
+python invoke.py --llm "anthropic.claude-3-5-sonnet-20240620-v1:0" --text "This is a test document. Municipality of Milan, lot 2, map sheet 2, parcel 5, subunit 45."
 ```
 
-### Output atteso:
+### Expected Output:
 
 ```json
 {
@@ -39,84 +36,80 @@ python invoke.py --llm "anthropic.claude-3-5-sonnet-20240620-v1:0" --text "Quest
 }
 ```
 
+## Fine-Tuning
 
-## Fine Tuning
+Modify fine-tuning parameters as needed:
 
-- cambiare parametri di fine-tuning all'occorrenza
-```
+```sh
 ..\venv\Scripts\python src\llms_ft.py
 ```
 
+## Evaluation
 
-## Evaluation:
-Il processo di evaluation server per valutare le performance tra i diversi modelli disponibili.
+The evaluation process compares performance across different models.
 
+### Datasets
 
-### Datasets:
-Scaricare dati grezzi, utili per generare i dataset, da [s3://datasinc-nlp-projects/api-coordinate-catastali/](s3://datasinc-nlp-projects/api-coordinate-catastali/)  e salvare in una cartella ./data. I dati grezzi con prefisso "Renzo" sono i samples originali degli annotatori. I dati grezzi con prefisso "sanitezed" sono quelli da me rivisti.
-
-Datasets derivati per evaluation:
-
-- monolotto: circa 150 samples
-- multilotto: circa 50 samples
-- test_small: 25 samples
-- test_medium: 50 samples. Include test_small
-- test_full: 150 sameples. Include test_medium
-- validation_small: 25 samples
-- validation_full: 50 samples. Include validation_small
+- **monolotto**: ~150 samples
+- **multilotto**: ~50 samples
+- **test_small**: 25 samples
+- **test_medium**: 50 samples (includes `test_small`)
+- **test_full**: 150 samples (includes `test_medium`)
+- **validation_small**: 25 samples
+- **validation_full**: 50 samples (includes `validation_small`)
 
 
-### Prompts:
+### Prompts
 
-Da usare solo con Claude LLMs:
+#### Claude LLMs:
+- `ie-v1-claude`
+- `ie-v2-claude`
+- `ie-v3-claude`
 
-- ie-v1-claude
-- ie-v2-claude
-- ie-v3-claude
+#### Llama LLMs:
+- `ie-v1-llama`
+- `ie-v2-llama`
 
-Da usare con Llama LLMs:
+### Models
 
-- ie-v1-llama
-- ie-v2-llama
+- **Human** (compares human annotations with corrected references)
+- **Rules** (grammar-based extractor on AWS Lambda)
+- **Anthropic Claude**:
+  - `claude-instant-v1`
+  - `claude-v2`
+  - `claude-v2:1`
+  - `claude-3-sonnet-20240229-v1:0`
+  - `claude-3-haiku-20240307-v1:0`
+  - `claude-3-opus-20240229-v1:0`
+  - `claude-3-5-sonnet-20240620-v1:0`
+- **Meta Llama 3**:
+  - `llama3-1-405b-instruct-v1:0`
+  - `llama3-1-70b-instruct-v1:0`
+  - `llama3-1-8b-instruct-v1:0`
+  - `llama3-local` (local Llama model based on `llms_ft.py` configurations)
+  - `llama3-local-ft` (fine-tuned local Llama model)
+  
 
+### Running Evaluation
 
+Example experiments:
 
-### Models:
-
-- human (semplicemente legge le annotazioni degli umani e le confronta con quelle corrette da me)
-- rules (richiama l'estrattore basato su gramamtica su lambda)
-- anthropic.claude-instant-v1
-- anthropic.claude-v2
-- anthropic.claude-v2:1
-- anthropic.claude-3-sonnet-20240229-v1:0
-- anthropic.claude-3-haiku-20240307-v1:0
-- anthropic.claude-3-opus-20240229-v1:0
-- anthropic.claude-3-5-sonnet-20240620-v1:0
-- meta.llama3-1-405b-instruct-v1:0
-- meta.llama3-1-70b-instruct-v1:0
-- meta.llama3-1-8b-instruct-v1:0
-- llama3-local (usa un modello llama locale a seconda delle configurazioni in llms_ft.py)
-- llama3-local-ft (usa un modello llama locale finetunato a seconda delle configurazioni in llms_ft.py)
-
-
-### Esegui evaluation
-- esempi su come lanciare un'esperimento:
-```
-..\venv\Scripts\python src\ie.py  --dataset test_small --model anthropic.claude-3-haiku-20240307-v1:0 --ie_prompt ie-v3-claude
-..\venv\Scripts\python src\ie.py  --dataset test_small --model meta.llama3-1-70b-instruct-v1:0 --ie_prompt ie-v2-llama
-..\venv\Scripts\python src\ie.py  --dataset test_small --model human
-..\venv\Scripts\python src\ie.py  --dataset test_small --model rules
+```sh
+..\venv\Scripts\python src\ie.py --dataset test_small --model anthropic.claude-3-haiku-20240307-v1:0 --ie_prompt ie-v3-claude
+..\venv\Scripts\python src\ie.py --dataset test_small --model meta.llama3-1-70b-instruct-v1:0 --ie_prompt ie-v2-llama
+..\venv\Scripts\python src\ie.py --dataset test_small --model human
+..\venv\Scripts\python src\ie.py --dataset test_small --model rules
 ```
 
-- Per altri dettagli sui parametri, digitare:
+For more details on parameters:
+
+```sh
+..\venv\Scripts\python src\ie.py --help
 ```
-..\venv\Scripts\python src\ie.py  --help
-```
-I risultati sono salvati nella cartella ./results
 
+Results are saved in `./results`.
 
-
-### Performance
+## Performance
 <img src="images/performance_overall.png" alt="Caption for the image" width="800">
 
 *Performance comparison of LLMs, human annotators and rule-based baseline.*
