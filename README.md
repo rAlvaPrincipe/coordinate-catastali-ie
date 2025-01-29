@@ -1,5 +1,5 @@
 
-# Estrattore Coordinate Catastali (LLM-based)
+# Coordinate Catastali, Information Extraction con LLMs
 
 Estrae lotto, comune (nome esteso), foglio, particella, sub, tipo immobile
 
